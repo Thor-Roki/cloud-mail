@@ -143,6 +143,20 @@ const emailService = {
 			.run();
 	},
 
+	async selectReceivedByMessageId(c, messageId, toEmail) {
+		if (!messageId || !toEmail) {
+			return null;
+		}
+		return orm(c).select().from(email).where(
+			and(
+				eq(email.messageId, messageId),
+				eq(email.toEmail, toEmail),
+				eq(email.type, emailConst.type.RECEIVE),
+				ne(email.status, emailConst.status.SAVING)
+			)
+		).orderBy(desc(email.emailId)).limit(1).get();
+	},
+
 	receive(c, params, cidAttList, r2domain) {
 		params.content = this.imgReplace(params.content, cidAttList, r2domain)
 		return orm(c).insert(email).values({ ...params }).returning().get();

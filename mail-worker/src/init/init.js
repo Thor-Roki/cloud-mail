@@ -38,6 +38,11 @@ const dbInit = {
 		} catch (e) {
 			console.warn(`跳过字段：${e.message}`);
 		}
+		try {
+			await c.env.db.prepare(`CREATE INDEX IF NOT EXISTS idx_email_message_id_to_email ON email(message_id, to_email);`).run();
+		} catch (e) {
+			console.warn(`跳过索引：${e.message}`);
+		}
 	},
 
 	async v2_8DB(c) {

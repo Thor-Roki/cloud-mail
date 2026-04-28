@@ -100,6 +100,12 @@ export async function email(message, env, ctx) {
 			status: emailConst.status.SAVING
 		};
 
+		const duplicateEmail = await emailService.selectReceivedByMessageId({ env }, email.messageId, message.to);
+		if (duplicateEmail) {
+			console.warn(`Duplicate inbound email ignored: message_id=${email.messageId}, to=${message.to}, email_id=${duplicateEmail.emailId}`);
+			return;
+		}
+
 		const attachments = [];
 		const cidAttachments = [];
 
